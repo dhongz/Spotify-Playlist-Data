@@ -1,6 +1,4 @@
 import spotipy
-import sys
-import requests
 import pandas as pd
 from spotipy.oauth2 import SpotifyOAuth
 
@@ -71,7 +69,7 @@ for user in users:
     except:
         print(user + "does not exist.")
         continue
-    playlists = sp.user_playlists(user, 4)
+    playlists = sp.user_playlists(user, 6)
     for playlist in playlists['items']:
         tracks = sp.playlist_items(playlist['id'])
         for track in tracks['items']:
