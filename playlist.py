@@ -12,24 +12,7 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id="7ae0264a93f344aab5b391
 # Initialize data frames and variables
 data = pd.DataFrame({
     "user": [],
-    "song": [],
-    "artist": [],
-    "danceability": [],
-    "energy": [],
-    "key": [],
-    "loudness": [],
-    "mode": [],
-    "speechiness": [],
-    "acousticness": [],
-    "instrumentalness": [],
-    "liveness": [],
-    "valence": [],
-    "tempo": [],
-    "time_signature": []
-})
-
-newdata = pd.DataFrame({
-    "user": [],
+    "user_id": [],
     "song": [],
     "artist": [],
     "danceability": [],
@@ -71,6 +54,25 @@ for user in users:
     for playlist in playlists['items']:
         tracks = sp.playlist_items(playlist['id'])
         for track in tracks['items']:
+            newdata = pd.DataFrame({
+                "user": [],
+                "user_id": [],
+                "song": [],
+                "artist": [],
+                "danceability": [],
+                "energy": [],
+                "key": [],
+                "loudness": [],
+                "mode": [],
+                "speechiness": [],
+                "acousticness": [],
+                "instrumentalness": [],
+                "liveness": [],
+                "valence": [],
+                "tempo": [],
+                "time_signature": []
+            })
+
             if track['track'] != None:
                 song = track['track']['name']
                 song_id = track['track']['id']
@@ -89,7 +91,8 @@ for user in users:
                         audio_features = af[0]
                         if audio_features != None:
                             newdata = pd.DataFrame({
-                                "user": [user_id],
+                                "user": [user],
+                                "user_id": [user_id],
                                 "song": [song],
                                 "artist": [combo_artist],
                                 "danceability": [audio_features["danceability"]],
@@ -108,7 +111,8 @@ for user in users:
                             data = pd.concat([data, newdata])
                         else:
                             newdata = pd.DataFrame({
-                                "user": [user_id],
+                                "user": [user],
+                                "user_id": [user_id],
                                 "song": [song],
                                 "artist": [combo_artist],
                                 "danceability": [float("NaN")],
