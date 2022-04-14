@@ -7,13 +7,13 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id="7ae0264a93f344aab5b391
                                                client_secret="c5b5e3795aca4c7e919596db84035e46",
                                                redirect_uri="https://www.spotify.com/us/",
                                                scope="user-library-read"),
-                                               requests_timeout=10, retries=10)
+                     requests_timeout=10, retries=10)
 
-#Initialize data frames and variables
+# Initialize data frames and variables
 data = pd.DataFrame({
     "user": [],
-    "song":[],
-    "artist":[],
+    "song": [],
+    "artist": [],
     "danceability": [],
     "energy": [],
     "key": [],
@@ -30,8 +30,8 @@ data = pd.DataFrame({
 
 newdata = pd.DataFrame({
     "user": [],
-    "song":[],
-    "artist":[],
+    "song": [],
+    "artist": [],
     "danceability": [],
     "energy": [],
     "key": [],
@@ -47,19 +47,17 @@ newdata = pd.DataFrame({
 })
 
 user_id = int(0)
-isTrack= True
+isTrack = True
 
-users_nodup = pd.read_excel('spotifyusernames.xlsx', sheet_name = "Combined")
+users_nodup = pd.read_excel('spotifyusernames.xlsx', sheet_name="Combined")
 users_nodup = users_nodup.reset_index()
-    
-#Remove duplicate users
+
+# Remove duplicate users
 users = []
 
 for index, row in users_nodup.iterrows():
     if row['Usernames'] not in users:
         users.append(str(row['Usernames']))
-
-        
 
 
 # Loop through data
@@ -85,14 +83,15 @@ for user in users:
                             if combo_artist == "":
                                 combo_artist = artist['name']
                             else:
-                                combo_artist = combo_artist + ", " + artist['name']
+                                combo_artist = combo_artist + \
+                                    ", " + artist['name']
                         af = sp.audio_features(song_id)
                         audio_features = af[0]
                         if audio_features != None:
                             newdata = pd.DataFrame({
                                 "user": [user_id],
-                                "song":[song],
-                                "artist":[combo_artist],
+                                "song": [song],
+                                "artist": [combo_artist],
                                 "danceability": [audio_features["danceability"]],
                                 "energy": [audio_features["energy"]],
                                 "key": [audio_features["key"]],
@@ -105,13 +104,13 @@ for user in users:
                                 "valence": [audio_features["valence"]],
                                 "tempo": [audio_features["tempo"]],
                                 "time_signature": [audio_features["time_signature"]]
-                                })
-                            data = pd.concat([data,newdata])
+                            })
+                            data = pd.concat([data, newdata])
                         else:
                             newdata = pd.DataFrame({
                                 "user": [user_id],
-                                "song":[song],
-                                "artist":[combo_artist],
+                                "song": [song],
+                                "artist": [combo_artist],
                                 "danceability": [float("NaN")],
                                 "energy": [float("NaN")],
                                 "key": [float("NaN")],
@@ -124,10 +123,11 @@ for user in users:
                                 "valence": [float("NaN")],
                                 "tempo": [float("NaN")],
                                 "time_signature": [float("NaN")]
-                                })
-                            data = pd.concat([data,newdata])
+                            })
+                            data = pd.concat([data, newdata])
     print("################################################################################")
     print(user)
     user_id += int(1)
 
-#data.to_csv (r'/Users/dillonhong/Desktop/spotifyannarbordata_two.csv', index = False, header=True)
+data.to_csv(r'/Users/dillonhong/Desktop/spotifyannarbordata_two.csv',
+            index=False, header=True)
