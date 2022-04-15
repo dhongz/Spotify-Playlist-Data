@@ -133,6 +133,5 @@ for user in users:
     print(user)
     user_id += int(1)
 
-data.to_csv(r'C:\Users\Dillon\Desktop\spotifyannarbordata.csv',
-            index=False, header=True)
+data.to_excel(r'C:\Users\Dillon\Desktop\spotifyannarbordata.xlsx')
 #data.to_csv(r'/Users/dillonhong/Desktop/spotifyannarbordata_two.csv', index=False, header=True)
