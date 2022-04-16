@@ -45,6 +45,11 @@ for index, row in users_nodup.iterrows():
 
 # Loop through data
 for user in users:
+    sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id="7ae0264a93f344aab5b3910711af2097",
+                              client_secret="c5b5e3795aca4c7e919596db84035e46",
+                              redirect_uri="https://www.spotify.com/us/",
+                              scope="user-library-read"),
+    requests_timeout=10, retries=10)
     try:
         sp._get("https://api.spotify.com/v1/users/" + str(user))
     except:
