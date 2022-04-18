@@ -46,10 +46,10 @@ for index, row in users_nodup.iterrows():
 # Loop through data
 for user in users:
     sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id="7ae0264a93f344aab5b3910711af2097",
-                              client_secret="c5b5e3795aca4c7e919596db84035e46",
-                              redirect_uri="https://www.spotify.com/us/",
-                              scope="user-library-read"),
-    requests_timeout=10, retries=10)
+                                                   client_secret="c5b5e3795aca4c7e919596db84035e46",
+                                                   redirect_uri="https://www.spotify.com/us/",
+                                                   scope="user-library-read"),
+                         requests_timeout=1000, retries=10)
     try:
         sp._get("https://api.spotify.com/v1/users/" + str(user))
     except:
@@ -64,6 +64,7 @@ for user in users:
                 "user_id": [],
                 "song": [],
                 "artist": [],
+                "popularity": [],
                 "danceability": [],
                 "energy": [],
                 "key": [],
@@ -84,6 +85,7 @@ for user in users:
                 if song_id != None:
                     isTrack = track['track']['track']
                     if isTrack:
+                        popularity = track['track']['popularity']
                         artists = track['track']['album']['artists']
                         combo_artist = ""
                         for artist in artists:
@@ -100,6 +102,7 @@ for user in users:
                                 "user_id": [user_id],
                                 "song": [song],
                                 "artist": [combo_artist],
+                                "popularity": [popularity],
                                 "danceability": [audio_features["danceability"]],
                                 "energy": [audio_features["energy"]],
                                 "key": [audio_features["key"]],
@@ -120,6 +123,7 @@ for user in users:
                                 "user_id": [user_id],
                                 "song": [song],
                                 "artist": [combo_artist],
+                                "popularity": [popularity],
                                 "danceability": [float("NaN")],
                                 "energy": [float("NaN")],
                                 "key": [float("NaN")],
