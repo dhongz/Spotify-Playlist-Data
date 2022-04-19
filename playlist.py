@@ -1,17 +1,14 @@
-from datetime import datetime
-from xml.sax.handler import DTDHandler
+
 import spotipy
 import pandas as pd
 from spotipy.oauth2 import SpotifyOAuth
 import numpy as np
-import datetime as dt
 
-
-sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id="7ae0264a93f344aab5b3910711af2097",
-                                               client_secret="c5b5e3795aca4c7e919596db84035e46",
+sp = spotipy.Spotify(auth_manager= SpotifyOAuth(client_id="d7175de87c5248a09cddd0562475cc6c",
+                                               client_secret="cf1e9044d43c419996c0b301889b67db",
                                                redirect_uri="https://www.spotify.com/us/",
-                                               scope="user-library-read"),
-                     requests_timeout=1800, retries=50)
+                                               scope="user-library-read")
+                                               , requests_session = True, requests_timeout=1800)
 
 # Initialize data frames and variables
 data = pd.DataFrame({
@@ -45,19 +42,17 @@ users_nodup = users_nodup.reset_index()
 
 # Remove duplicate users
 users = []
-
 for index, row in users_nodup.iterrows():
     if row['Usernames'] not in users:
         users.append(str(row['Usernames']))
 
-
 # Loop through data
 for user in users:
-    sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id="7ae0264a93f344aab5b3910711af2097",
-                                                   client_secret="c5b5e3795aca4c7e919596db84035e46",
-                                                   redirect_uri="https://www.spotify.com/us/",
-                                                   scope="user-library-read"),
-                         requests_timeout=1800, retries=50)
+    sp = spotipy.Spotify(auth_manager= SpotifyOAuth(client_id="d7175de87c5248a09cddd0562475cc6c",
+                                               client_secret="cf1e9044d43c419996c0b301889b67db",
+                                               redirect_uri="https://www.spotify.com/us/",
+                                               scope="user-library-read")
+                                               , requests_session = True, requests_timeout=1800)
     try:
         sp._get("https://api.spotify.com/v1/users/" + str(user))
     except:
@@ -95,6 +90,7 @@ for user in users:
                 if song_id != None:
                     isTrack = track['track']['track']
                     if isTrack:
+                        print(track)
                         popularity = track['track']['popularity']
                         artists = track['track']['album']['artists']
                         combo_artist = []
@@ -158,7 +154,6 @@ for user in users:
     print("################################################################################")
     print(user)
     user_id += int(1)
-date = dt.datetime.now()
-filename = "spotifyannarbordata_" +  date + ".xlsx"
-data.to_excel(filename)
+
+data.to_excel("spotifyannarbordata.xlsx")
 #data.to_csv(r'/Users/dillonhong/Desktop/spotifyannarbordata_two.csv', index=False, header=True)
