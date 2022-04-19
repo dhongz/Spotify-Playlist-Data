@@ -1,20 +1,27 @@
+from datetime import datetime
+from xml.sax.handler import DTDHandler
 import spotipy
 import pandas as pd
 from spotipy.oauth2 import SpotifyOAuth
+import numpy as np
+import datetime as dt
 
 
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id="7ae0264a93f344aab5b3910711af2097",
                                                client_secret="c5b5e3795aca4c7e919596db84035e46",
                                                redirect_uri="https://www.spotify.com/us/",
                                                scope="user-library-read"),
-                     requests_timeout=10, retries=10)
+                     requests_timeout=1800, retries=50)
 
 # Initialize data frames and variables
 data = pd.DataFrame({
+
     "user": [],
     "user_id": [],
     "song": [],
     "artist": [],
+    "song_popularity": [],
+    "artist_popularity": [],
     "danceability": [],
     "energy": [],
     "key": [],
@@ -26,7 +33,8 @@ data = pd.DataFrame({
     "liveness": [],
     "valence": [],
     "tempo": [],
-    "time_signature": []
+    "time_signature": [],
+    "genres": []
 })
 
 user_id = int(0)
@@ -49,7 +57,7 @@ for user in users:
                                                    client_secret="c5b5e3795aca4c7e919596db84035e46",
                                                    redirect_uri="https://www.spotify.com/us/",
                                                    scope="user-library-read"),
-                         requests_timeout=1000, retries=10)
+                         requests_timeout=1800, retries=50)
     try:
         sp._get("https://api.spotify.com/v1/users/" + str(user))
     except:
@@ -64,7 +72,8 @@ for user in users:
                 "user_id": [],
                 "song": [],
                 "artist": [],
-                "popularity": [],
+                "song_popularity": [],
+                "artist_popularity": [],
                 "danceability": [],
                 "energy": [],
                 "key": [],
@@ -76,7 +85,8 @@ for user in users:
                 "liveness": [],
                 "valence": [],
                 "tempo": [],
-                "time_signature": []
+                "time_signature": [],
+                "genres": []
             })
 
             if track['track'] != None:
@@ -87,13 +97,16 @@ for user in users:
                     if isTrack:
                         popularity = track['track']['popularity']
                         artists = track['track']['album']['artists']
-                        combo_artist = ""
+                        combo_artist = []
+                        combo_artist_popularity = []
+                        combo_genres = []
                         for artist in artists:
-                            if combo_artist == "":
-                                combo_artist = artist['name']
-                            else:
-                                combo_artist = combo_artist + \
-                                    ", " + artist['name']
+                                art = sp.artist(artist['id'])
+                                combo_artist.append(artist['name']) 
+                                combo_artist_popularity.append(art['popularity']) 
+                                for genre in art['genres']:
+                                    combo_genres.append(genre)
+                        artist_popularity = np.average(combo_artist_popularity)
                         af = sp.audio_features(song_id)
                         audio_features = af[0]
                         if audio_features != None:
@@ -102,7 +115,8 @@ for user in users:
                                 "user_id": [user_id],
                                 "song": [song],
                                 "artist": [combo_artist],
-                                "popularity": [popularity],
+                                "song_popularity": [popularity],
+                                "artist_popularity": [artist_popularity],
                                 "danceability": [audio_features["danceability"]],
                                 "energy": [audio_features["energy"]],
                                 "key": [audio_features["key"]],
@@ -114,7 +128,8 @@ for user in users:
                                 "liveness": [audio_features["liveness"]],
                                 "valence": [audio_features["valence"]],
                                 "tempo": [audio_features["tempo"]],
-                                "time_signature": [audio_features["time_signature"]]
+                                "time_signature": [audio_features["time_signature"]],
+                                "genres": [combo_genres]
                             })
                             data = pd.concat([data, newdata])
                         else:
@@ -123,7 +138,8 @@ for user in users:
                                 "user_id": [user_id],
                                 "song": [song],
                                 "artist": [combo_artist],
-                                "popularity": [popularity],
+                                "song_popularity": [popularity],
+                                "artist_popularity": [artist_popularity],
                                 "danceability": [float("NaN")],
                                 "energy": [float("NaN")],
                                 "key": [float("NaN")],
@@ -135,12 +151,14 @@ for user in users:
                                 "liveness": [float("NaN")],
                                 "valence": [float("NaN")],
                                 "tempo": [float("NaN")],
-                                "time_signature": [float("NaN")]
+                                "time_signature": [float("NaN")],
+                                "genres": [combo_genres]
                             })
                             data = pd.concat([data, newdata])
     print("################################################################################")
     print(user)
     user_id += int(1)
-
-data.to_excel(r'C:\Users\Dillon\Desktop\spotifyannarbordata.xlsx')
+date = dt.datetime.now()
+filename = "spotifyannarbordata_" +  date + ".xlsx"
+data.to_excel(filename)
 #data.to_csv(r'/Users/dillonhong/Desktop/spotifyannarbordata_two.csv', index=False, header=True)
