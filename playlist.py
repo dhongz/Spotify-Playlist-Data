@@ -4,8 +4,8 @@ import pandas as pd
 from spotipy.oauth2 import SpotifyOAuth
 import numpy as np
 
-sp = spotipy.Spotify(auth_manager= SpotifyOAuth(client_id="d7175de87c5248a09cddd0562475cc6c",
-                                               client_secret="cf1e9044d43c419996c0b301889b67db",
+sp = spotipy.Spotify(auth_manager= SpotifyOAuth(client_id="7ae0264a93f344aab5b3910711af2097",
+                                               client_secret="2266135786b3428485b962c68ee6df6f",
                                                redirect_uri="https://www.spotify.com/us/",
                                                scope="user-library-read")
                                                , requests_session = True, requests_timeout=1800)
@@ -48,8 +48,8 @@ for index, row in users_nodup.iterrows():
 
 # Loop through data
 for user in users:
-    sp = spotipy.Spotify(auth_manager= SpotifyOAuth(client_id="d7175de87c5248a09cddd0562475cc6c",
-                                               client_secret="cf1e9044d43c419996c0b301889b67db",
+    sp = spotipy.Spotify(auth_manager= SpotifyOAuth(client_id="7ae0264a93f344aab5b3910711af2097",
+                                               client_secret="2266135786b3428485b962c68ee6df6f",
                                                redirect_uri="https://www.spotify.com/us/",
                                                scope="user-library-read")
                                                , requests_session = True, requests_timeout=1800)
@@ -90,7 +90,6 @@ for user in users:
                 if song_id != None:
                     isTrack = track['track']['track']
                     if isTrack:
-                        print(track)
                         popularity = track['track']['popularity']
                         artists = track['track']['album']['artists']
                         combo_artist = []
